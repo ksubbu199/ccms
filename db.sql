@@ -19,6 +19,30 @@
 -- Table structure for table `complaints`
 --
 
+DROP TABLE IF EXISTS `depts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `depts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `password` varchar(64) NOT NULL,
+  `department` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `department` (`department`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`department`) REFERENCES `depts` (`id`)
+);
+
+
 DROP TABLE IF EXISTS `complaints`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -32,7 +56,7 @@ CREATE TABLE `complaints` (
   PRIMARY KEY (`id`),
   KEY `user` (`user`),
   CONSTRAINT `complaints_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,15 +73,6 @@ UNLOCK TABLES;
 -- Table structure for table `depts`
 --
 
-DROP TABLE IF EXISTS `depts`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `depts` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `depts`
@@ -73,18 +88,7 @@ UNLOCK TABLES;
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `password` varchar(64) NOT NULL,
-  `department` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `department` (`department`),
-  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`department`) REFERENCES `depts` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
