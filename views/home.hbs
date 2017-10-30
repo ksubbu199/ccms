@@ -1,0 +1,192 @@
+<div class="row">
+  <center>
+    {{#if error}}
+      <p style="color:red">{{error}}</p>
+    {{/if}}
+  </center>
+</div>
+
+<div class="row">
+  <canvas id="bar-chart" width="800" height="450"></canvas>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<script>
+new Chart(document.getElementById("bar-chart"), {
+    type: 'bar',
+    scaleOverride:true,
+    scaleStepWidth:1,
+    data: {
+      labels: [{{#each dstats}}"{{this}}",{{/each}}],
+      datasets: [
+        {
+          label: "Count",
+          backgroundColor: ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850"],
+          data: [{{#each cstats}}"{{this}}",{{/each}}]
+        }
+      ]
+    },
+    options: {
+      legend: { display: true },
+      title: {
+        display: true,
+        text: 'Complaints and departments graph'
+      },
+      scales: {
+      	yAxes:[{
+        		stacked:true,
+            gridLines: {
+            	display:true,
+              color:"rgba(255,99,132,0.2)"
+            },
+            ticks: {
+                    min: 0,
+                    callback: function(value, index, values) {
+                        if (Math.floor(value) === value) {
+                            return value;
+                        }
+                    }
+                }
+        }],
+        xAxes:[{
+        		gridLines: {
+            	display:false
+            }
+        }]
+      }
+    }
+});
+</script>
+<div class="row">
+  <form action="/complain" method="post">
+    <label>Department:</label>
+    <select class="form-control" name="dept">
+      {{#each depts}}
+        <option value="{{id}}">{{name}}</option>
+      {{/each}}
+    </select>
+    <label>Info:</label>
+    <textarea class="form-control" name="info"></textarea>
+    <input class="form-control btn btn-primary" name="submit" value="submit" type="submit">
+  </form>
+</div>
+<div class="row">
+  <center><h3>All complaints</h3></center>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Info</th>
+        <th>Author</th>
+        <th>Department</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each all_complaints}}
+      <tr>
+        <td>{{id}}</td>
+        <td>{{info}}</td>
+        <td>{{username}}</td>
+        <td>{{deptname}}</td>
+        <td>{{time}}</td>
+        <td>{{status}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+
+<div class="row">
+  <center><h3>My complaints</h3></center>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Info</th>
+        <th>Author</th>
+        <th>Department</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each my_complaints}}
+      <tr>
+        <td>{{id}}</td>
+        <td>{{info}}</td>
+        <td>{{username}}</td>
+        <td>{{deptname}}</td>
+        <td>{{time}}</td>
+        <td>{{status}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+{{#if permissions}}
+<div class="row">
+  <center><h3>My dept complaints</h3></center>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Info</th>
+        <th>Author</th>
+        <th>Department</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each dept_complaints}}
+      <tr>
+        <td>{{id}}</td>
+        <td>{{info}}</td>
+        <td>{{username}}</td>
+        <td>{{deptname}}</td>
+        <td>{{time}}</td>
+        <td>
+          <select class="form-control changeStatus">
+            <option value="0" {{#if (eq status 0)}}selected{{/if}}>Initial</option>
+            <option value="1" {{#if (eq status 1)}}selected{{/if}}>Progress</option>
+            <option value="2" {{#if (eq status 2)}}selected{{/if}}>Done</option>
+          </select>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+{{/if}}
+<script>
+$(document).ready(function() {
+  $("table").each(function(){
+    $(this).DataTable( {
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+    } );
+  });
+
+} );
+</script>
