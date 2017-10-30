@@ -9,6 +9,12 @@ var expressValidator = require('express-validator');
 var routes = require('./routes/index');
 var session = require('express-session');
 
+hbs.registerHelper('if_eq', function(a, b, opts) {
+    if(a == b) // Or === depending on your needs
+        return opts.fn(this);
+    else
+        return opts.inverse(this);
+});
 var app = express();
 
 // view engine setup

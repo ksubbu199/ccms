@@ -31,7 +31,7 @@ var groupBy = function(xs, key) {
 router.get('/', function(req, res, next) {
   if(!req.session.username)
   {
-    res.render('index', { title: 'Express',layout: 'layout' });
+    res.redirect('/login');
   }
   else
   {
@@ -70,7 +70,7 @@ router.get('/', function(req, res, next) {
       dept_complaints=[];
       if(dept>1)
       {
-        dept_complaints=filter(results,{department:dept});
+        dept_complaints=filter(results,{dept:dept});
         permissions=true;
       }
       connection.query("select * from depts where name!='None'",function(error,results,fields){
@@ -131,7 +131,7 @@ router.get('/login', function(req, res, next) {
   connection.query("select * from depts where 1",function(error,results,fields){
     if(error) throw error;
     depts=results;
-    res.render('login', { title: 'Express',layout: 'layout',depts:depts });
+    res.render('login', { title: 'Express',layout: 'layout',depts:depts, logout:true });
   });
 });
 
@@ -152,6 +152,30 @@ router.post('/login', function(req, res, next) {
     }
     else {
       res.render('login', { title: 'Express',layout: 'layout', error:'Unable to login!' });
+    }
+
+  });
+});
+
+
+router.post('/change', function(req, res, next) {
+  if(!req.session.username)
+    res.redirect('/');
+
+  console.log("start");
+  id=req.body.id;
+  status=req.body.status;
+  console.log('update complaints set status='+status+' where id='+id);
+  connection.query('update complaints set status='+status+' where id='+id, function (error, results, fields) {
+    if (error){
+      //res.render('home', { title: 'Express',layout: 'layout', error:'Unable to update!' });
+      console.log(error);
+        res.redirect("/");
+    }
+    else {
+      console.log("end");
+      //res.render('home', { title: 'Express',layout: 'layout', error:'changes made successfully!' });
+      res.redirect("/");
     }
 
   });
